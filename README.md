@@ -70,7 +70,8 @@ Use it with caution.
 
 ## See Also
 
-[kakoune-vertical-selection](https://github.com/occivink/kakoune-vertical-selection)
+- [kakoune-mirror](https://github.com/Delapouite/kakoune-mirror)
+- [kakoune-vertical-selection](https://github.com/occivink/kakoune-vertical-selection)
 
 ## Licence
 
