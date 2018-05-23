@@ -82,10 +82,8 @@ define-command -hidden text-object-vertical %{ %sh{
 
 # hack to know in which "submode" we are
 # gGvV are not used in the context of this plugin
-declare-option -hidden str-list last_mode
-hook global NormalKey .* %{ %sh{
-  case "$kak_hook_param" in
-    g|G|v|V|'<a-i>'|'<a-a>'|'['|']'|'{'|'}'|'<a-[>'|'<a-]>'|'<a-{>'|'<a-}>') mode="$kak_hook_param" ;;
-  esac
-  [ -n "$mode" ] && echo "set global last_mode $mode"
-} }
+declare-option -hidden str last_mode
+hook global NormalKey (g|G|v|V|<a-i>|<a-a>|\[|\]|\{|\}|<a-\[>|<a-\]>|<a-\{>|<a-\}>) %{
+  set-option global last_mode %val{hook_param}
+}
+
