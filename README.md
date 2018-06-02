@@ -28,7 +28,6 @@ This plugin attempts to address this issue.
 
 ## Usage
 
-
 ### pairs
 
 This plugins enhance the *pairs* text-objects (`(`, `)`, `{`, `}`…).
@@ -67,6 +66,18 @@ and `]v` selects down.
 
 There's currently a `t` text-object but it's very much work in progress at this stage.
 Use it with caution.
+
+### `selectors` mode
+
+A `selectors` user-mode is provided. Use the `text-object-map` command to enable it.
+
+By default it is mapped on `user s`. Its goal is to avoid using the `alt` key as much as possible
+and the related acrobatic fingers chords over the keyboard.
+
+Example: to extend the selections until the next bracket.
+From `<a-}> ]` to `, s K ]`
+
+You are guided by auto-info boxes along the way.
 
 ## See Also
 
