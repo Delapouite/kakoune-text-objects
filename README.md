@@ -30,7 +30,7 @@ This plugin attempts to address this issue.
 
 ### pairs
 
-This plugins enhance the *pairs* text-objects (`(`, `)`, `{`, `}`…).
+This plugin enhances the *pairs* text-objects (`(`, `)`, `{`, `}`…).
 
 Let's illustrate with the `braces` text-object.
 If the cursor is in a C function simple body and press `<a-i>{` it will select it.

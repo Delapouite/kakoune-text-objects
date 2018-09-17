@@ -15,51 +15,58 @@ map global object <tab> <esc>:text-object-indented-paragraph<ret> -docstring 'in
 map global object v '<esc>:text-object-vertical<ret>'             -docstring 'vertical'
 # alias to avoid shift
 map global object d '"'                                           -docstring 'double quote string'
+map global object o B                                             -docstring 'braces'
 
 # see issue #9
 # first normal behavior, then fallback if it fails
-define-command -hidden text-object-block -params 1 %@ %sh!
-  # there may be clever way to do this, but I don't want to be clever in shell
-  case "$1" in
-    '(') t=')';dir='<a-/>'; ;;
-    '{') t='}';dir='<a-/>'; ;;
-    '[') t=']';dir='<a-/>'; ;;
-    '<') t='>';dir='<a-/>'; ;;
-    ')') t='(';dir='/'; ;;
-    '}') t='{';dir='/'; ;;
-    ']') t='[';dir='/'; ;;
-    '>') t='<';dir='/'; ;;
-  esac
-  # $t is used instead of $1 to provide more 'intuitive' prev / next blocks when nested
-  echo "try %| exec $kak_opt_last_mode '$t' | catch %| exec $dir \Q '$t' \E <ret> ; exec $kak_opt_last_mode '$t' |"
-! @
+define-command -hidden text-object-block -params 1 %@
+  evaluate-commands %sh!
+    # there may be clever way to do this, but I don't want to be clever in shell
+    case "$1" in
+      '(') t=')';dir='<a-/>'; ;;
+      '{') t='}';dir='<a-/>'; ;;
+      '[') t=']';dir='<a-/>'; ;;
+      '<') t='>';dir='<a-/>'; ;;
+      ')') t='(';dir='/'; ;;
+      '}') t='{';dir='/'; ;;
+      ']') t='[';dir='/'; ;;
+      '>') t='<';dir='/'; ;;
+    esac
+    # $t is used instead of $1 to provide more 'intuitive' prev / next blocks when nested
+    echo "try %| exec $kak_opt_last_mode '$t' | catch %| exec $dir \Q '$t' \E <ret> ; exec $kak_opt_last_mode '$t' |"
+  !
+@
 
 # this line object may seem to repeat builtins,
 # it is mostly here to improve the orthogonality of kakoune design
-define-command -hidden text-object-line %{ %sh{
-  case "$kak_opt_last_mode" in
-    '<a-i>') k='x_' ;;
-    '<a-a>') k='x' ;;
-    '[') k='<a-h>' ;;
-    ']') k='<a-l>L' ;;
-    '{') k='Gh' ;;
-    '}') k='GlL' ;;
-    '<a-[>') k='<a-h>_' ;;
-    '<a-]>') k='<a-l>' ;;
-    '<a-{>') k='Gi' ;;
-    '<a-}>') k='Gl' ;;
-  esac
-  [ -n "$k" ] && echo "execute-keys <esc> $k"
-} }
+define-command -hidden text-object-line %{
+  evaluate-commands %sh{
+    case "$kak_opt_last_mode" in
+      '<a-i>') k='x_' ;;
+      '<a-a>') k='x' ;;
+      '[') k='<a-h>' ;;
+      ']') k='<a-l>L' ;;
+      '{') k='Gh' ;;
+      '}') k='GlL' ;;
+      '<a-[>') k='<a-h>_' ;;
+      '<a-]>') k='<a-l>' ;;
+      '<a-{>') k='Gi' ;;
+      '<a-}>') k='Gl' ;;
+    esac
+    [ -n "$k" ] && echo "execute-keys <esc> $k"
+  }
+}
 
 # work in progress - very brittle for now
-define-command -hidden text-object-tag %{ %sh{
-  case "$kak_opt_last_mode" in
-    '<a-i>') k='<a-i>c<gt>,<lt><ret>' ;;
-    '<a-a>') k='<esc><a-f><lt>2f<gt>' ;;
-  esac
-  [ -n "$k" ] && echo "exec $k"
-} }
+define-command -hidden text-object-tag %{
+  evaluate-commands %sh{
+    case "$kak_opt_last_mode" in
+      '<a-i>') k='<a-i>c<gt>,<lt><ret>' ;;
+      '<a-a>') k='<esc><a-f><lt>2f<gt>' ;;
+    esac
+    [ -n "$k" ] && echo "execute-keys $k"
+  }
+}
 
 # thanks occivink
 define-command -hidden text-object-indented-paragraph %{
@@ -68,17 +75,19 @@ define-command -hidden text-object-indented-paragraph %{
 }
 
 # depends on occivink/vertical-selection.kak
-define-command -hidden text-object-vertical %{ %sh{
-  case "$kak_opt_last_mode" in
-    '<a-i>') k='<esc>:select-vertically<ret>' ;;
-    '<a-a>') k='<a-i>w<esc>:select-vertically<ret>' ;;
-    '[') k='<esc>:select-up<ret>' ;;
-    ']') k='<esc>:select-down<ret>' ;;
-    '{') k='<a-i>w<esc>:select-up<ret>' ;;
-    '}') k='<a-i>w<esc>:select-down<ret>' ;;
-  esac
-  [ -n "$k" ] && echo "exec $k"
-} }
+define-command -hidden text-object-vertical %{
+  evaluate-commands %sh{
+    case "$kak_opt_last_mode" in
+      '<a-i>') k='<esc>:select-vertically<ret>' ;;
+      '<a-a>') k='<a-i>w<esc>:select-vertically<ret>' ;;
+      '[') k='<esc>:select-up<ret>' ;;
+      ']') k='<esc>:select-down<ret>' ;;
+      '{') k='<a-i>w<esc>:select-up<ret>' ;;
+      '}') k='<a-i>w<esc>:select-down<ret>' ;;
+    esac
+    [ -n "$k" ] && echo "execute-keys $k"
+  }
+}
 
 # helpers
 
@@ -94,8 +103,11 @@ define-command -hidden text-object-map %{
   try %{ declare-user-mode selectors }
   map global user s ':enter-user-mode selectors<ret>' -docstring 'selectors…'
 
+  map global selectors a '*%s<ret>' -docstring 'select all'
+  map global selectors b '%'        -docstring 'select buffer %'
+
   map global selectors i <a-i> -docstring 'select inside object <a-i>'
-  map global selectors a <a-a> -docstring 'select around object <a-a>'
+  map global selectors o <a-a> -docstring 'select outside object <a-a>'
 
   map global selectors j <a-[> -docstring 'select inner object start <a-[>'
   map global selectors k <a-]> -docstring 'select inner object end <a-]>'
@@ -112,8 +124,11 @@ define-command -hidden text-object-map %{
 define-command -hidden text-object-unmap %{
   unmap global user s
 
-  unmap global selectors i
   unmap global selectors a
+  unmap global selectors b
+
+  unmap global selectors i
+  unmap global selectors o
 
   unmap global selectors j
   unmap global selectors k
