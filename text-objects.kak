@@ -11,13 +11,9 @@ map global object '<gt>' '<esc>: text-object-block <gt><ret>' -docstring 'next a
 map global object 'x'     '<esc>: text-object-line<ret>'               -docstring 'line'
 map global object 't'     '<esc>: text-object-tag<ret>'                -docstring 'tag'
 map global object '<tab>' '<esc>: text-object-indented-paragraph<ret>' -docstring 'indented paragraph'
-# depends on occivink/vertical-selection.kak
-map global object 'v' '<esc>: try %{
-                         text-object-vertical
-                       } catch %{
-                         echo -markup "{Information}occivink/vertical-selection.kak not installed"
-                       }
-                       <ret>' -docstring 'vertical'
+# depends on occivink/kakoune-vertical-selection
+map global object 'v' '<esc>: text-object-vertical<ret>'
+
 # alias to avoid shift
 map global object 'd' '"' -docstring 'double quote string'
 map global object 'o' 'B' -docstring 'braces'
@@ -79,18 +75,22 @@ define-command -hidden text-object-indented-paragraph %{
   execute-keys '<a-i>i<a-z>i'
 }
 
-# depends on occivink/vertical-selection.kak
+# depends on occivink/kakoune-vertical-selection
 define-command -hidden text-object-vertical %{
-  evaluate-commands %sh{
-    case "$kak_opt_objects_last_mode" in
-      '<a-i>') k='<esc>:<space>select-vertically<ret>' ;;
-      '<a-a>') k='<a-i>w<esc>:<space>select-vertically<ret>' ;;
-      '[') k='<esc>:<space>select-up<ret>' ;;
-      ']') k='<esc>:<space>select-down<ret>' ;;
-      '{') k='<a-i>w<esc>:<space>select-up<ret>' ;;
-      '}') k='<a-i>w<esc>:<space>select-down<ret>' ;;
-    esac
-    [ -n "$k" ] && echo "execute-keys $k"
+  try %{
+    evaluate-commands %sh{
+      case "$kak_opt_objects_last_mode" in
+        '<a-i>') k='<esc>:<space>select-vertically<ret>' ;;
+        '<a-a>') k='<a-i>w<esc>:<space>select-vertically<ret>' ;;
+        '[') k='<esc>:<space>select-up<ret>' ;;
+        ']') k='<esc>:<space>select-down<ret>' ;;
+        '{') k='<a-i>w<esc>:<space>select-up<ret>' ;;
+        '}') k='<a-i>w<esc>:<space>select-down<ret>' ;;
+      esac
+      [ -n "$k" ] && echo "execute-keys $k"
+    }
+  } catch %{
+    fail "no selections remaining" 
   }
 }
 
