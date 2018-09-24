@@ -1,21 +1,21 @@
 # extended behaviors for pairs
-map global object ( '<esc>:text-object-block (<ret>'              -docstring 'prev parenthesis block'
-map global object ) '<esc>:text-object-block )<ret>'              -docstring 'next parenthesis block'
-map global object { '<esc>:text-object-block {<ret>'              -docstring 'prev braces block'
-map global object } '<esc>:text-object-block }<ret>'              -docstring 'next braces block'
-map global object [ '<esc>:text-object-block [<ret>'              -docstring 'prev brackets block'
-map global object ] '<esc>:text-object-block ]<ret>'              -docstring 'next brackets block'
-map global object <lt> '<esc>:text-object-block <lt><ret>'        -docstring 'prev angle block'
-map global object <gt> '<esc>:text-object-block <gt><ret>'        -docstring 'next angle block'
+map global object '('    '<esc>: text-object-block (<ret>'    -docstring 'prev parenthesis block'
+map global object ')'    '<esc>: text-object-block )<ret>'    -docstring 'next parenthesis block'
+map global object '{'    '<esc>: text-object-block {<ret>'    -docstring 'prev braces block'
+map global object '}'    '<esc>: text-object-block }<ret>'    -docstring 'next braces block'
+map global object '['    '<esc>: text-object-block [<ret>'    -docstring 'prev brackets block'
+map global object ']'    '<esc>: text-object-block ]<ret>'    -docstring 'next brackets block'
+map global object '<lt>' '<esc>: text-object-block <lt><ret>' -docstring 'prev angle block'
+map global object '<gt>' '<esc>: text-object-block <gt><ret>' -docstring 'next angle block'
 # additional text objects
-map global object x <esc>:text-object-line<ret>                   -docstring line
-map global object t <esc>:text-object-tag<ret>                    -docstring tag
-map global object <tab> <esc>:text-object-indented-paragraph<ret> -docstring 'indented paragraph'
+map global object 'x'     '<esc>: text-object-line<ret>'               -docstring 'line'
+map global object 't'     '<esc>: text-object-tag<ret>'                -docstring 'tag'
+map global object '<tab>' '<esc>: text-object-indented-paragraph<ret>' -docstring 'indented paragraph'
 # depends on occivink/vertical-selection.kak
-map global object v '<esc>:text-object-vertical<ret>'             -docstring 'vertical'
+map global object 'v' '<esc>: text-object-vertical<ret>' -docstring 'vertical'
 # alias to avoid shift
-map global object d '"'                                           -docstring 'double quote string'
-map global object o B                                             -docstring 'braces'
+map global object 'd' '"' -docstring 'double quote string'
+map global object 'o' 'B' -docstring 'braces'
 
 # see issue #9
 # first normal behavior, then fallback if it fails
