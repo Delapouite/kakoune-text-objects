@@ -13,9 +13,9 @@ map global object 't'     '<esc>: text-object-tag<ret>'                -docstrin
 map global object '<tab>' '<esc>: text-object-indented-paragraph<ret>' -docstring 'indented paragraph'
 # depends on occivink/vertical-selection.kak
 map global object 'v' '<esc>: try %{
-                           text-object-vertical
+                         text-object-vertical
                        } catch %{
-                           echo -markup "{Information}occivink/vertical-selection.kak not installed"
+                         echo -markup "{Information}occivink/vertical-selection.kak not installed"
                        }
                        <ret>' -docstring 'vertical'
 # alias to avoid shift
@@ -83,12 +83,12 @@ define-command -hidden text-object-indented-paragraph %{
 define-command -hidden text-object-vertical %{
   evaluate-commands %sh{
     case "$kak_opt_last_mode" in
-      '<a-i>') k='<esc>:select-vertically<ret>' ;;
-      '<a-a>') k='<a-i>w<esc>:select-vertically<ret>' ;;
-      '[') k='<esc>:select-up<ret>' ;;
-      ']') k='<esc>:select-down<ret>' ;;
-      '{') k='<a-i>w<esc>:select-up<ret>' ;;
-      '}') k='<a-i>w<esc>:select-down<ret>' ;;
+      '<a-i>') k='<esc>: select-vertically<ret>' ;;
+      '<a-a>') k='<a-i>w<esc>: select-vertically<ret>' ;;
+      '[') k='<esc>: select-up<ret>' ;;
+      ']') k='<esc>: select-down<ret>' ;;
+      '{') k='<a-i>w<esc>: select-up<ret>' ;;
+      '}') k='<a-i>w<esc>: select-down<ret>' ;;
     esac
     [ -n "$k" ] && echo "execute-keys $k"
   }
@@ -106,23 +106,23 @@ hook global NormalKey (g|G|v|V|<a-i>|<a-a>|\[|\]|\{|\}|<a-\[>|<a-\]>|<a-\{>|<a-\
 # to add the mappings back if needed
 define-command -hidden text-object-map %{
   try %{ declare-user-mode selectors }
-  map global user s ':enter-user-mode selectors<ret>' -docstring 'selectors…'
+  map global user s ': enter-user-mode selectors<ret>' -docstring 'selectors…'
 
-  map global selectors a '*%s<ret>' -docstring 'select all'
-  map global selectors b '%'        -docstring 'select buffer %'
+  map global selectors 'a' '*%s<ret>' -docstring 'select all'
+  map global selectors 'b' '%'        -docstring 'select buffer %'
 
-  map global selectors i <a-i> -docstring 'select inside object <a-i>'
-  map global selectors o <a-a> -docstring 'select outside object <a-a>'
+  map global selectors 'i' '<a-i>' -docstring 'select inside object <a-i>'
+  map global selectors 'o' '<a-a>' -docstring 'select outside object <a-a>'
 
-  map global selectors j <a-[> -docstring 'select inner object start <a-[>'
-  map global selectors k <a-]> -docstring 'select inner object end <a-]>'
-  map global selectors J <a-{> -docstring 'extend inner object start <a-{>'
-  map global selectors K <a-}> -docstring 'extend inner object end <a-}>'
+  map global selectors 'j' '<a-[>' -docstring 'select inner object start <a-[>'
+  map global selectors 'k' '<a-]>' -docstring 'select inner object end <a-]>'
+  map global selectors 'J' '<a-{>' -docstring 'extend inner object start <a-{>'
+  map global selectors 'K' '<a-}>' -docstring 'extend inner object end <a-}>'
 
-  map global selectors h [ -docstring 'select object start ['
-  map global selectors l ] -docstring 'select object end ]'
-  map global selectors H { -docstring 'extend object start {'
-  map global selectors L } -docstring 'extend object end }'
+  map global selectors 'h' '[' -docstring 'select object start ['
+  map global selectors 'l' ']' -docstring 'select object end ]'
+  map global selectors 'H' '{' -docstring 'extend object start {'
+  map global selectors 'L' '}' -docstring 'extend object end }'
 }
 
 # in rare scenarios when you need the original mappings
