@@ -12,7 +12,12 @@ map global object 'x'     '<esc>: text-object-line<ret>'               -docstrin
 map global object 't'     '<esc>: text-object-tag<ret>'                -docstring 'tag'
 map global object '<tab>' '<esc>: text-object-indented-paragraph<ret>' -docstring 'indented paragraph'
 # depends on occivink/vertical-selection.kak
-map global object 'v' '<esc>: text-object-vertical<ret>' -docstring 'vertical'
+map global object 'v' '<esc>: try %{
+                           text-object-vertical
+                       } catch %{
+                           echo -markup "{Information}occivink/vertical-selection.kak not installed"
+                       }
+                       <ret>' -docstring 'vertical'
 # alias to avoid shift
 map global object 'd' '"' -docstring 'double quote string'
 map global object 'o' 'B' -docstring 'braces'
