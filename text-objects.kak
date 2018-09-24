@@ -38,7 +38,7 @@ define-command -hidden text-object-block -params 1 %@
       '>') t='<';dir='/'; ;;
     esac
     # $t is used instead of $1 to provide more 'intuitive' prev / next blocks when nested
-    echo "try %| exec $kak_opt_last_mode '$t' | catch %| exec $dir \Q '$t' \E <ret> ; exec $kak_opt_last_mode '$t' |"
+    echo "try %| exec $kak_opt_objects_last_mode '$t' | catch %| exec $dir \Q '$t' \E <ret> ; exec $kak_opt_objects_last_mode '$t' |"
   !
 @
 
@@ -46,7 +46,7 @@ define-command -hidden text-object-block -params 1 %@
 # it is mostly here to improve the orthogonality of kakoune design
 define-command -hidden text-object-line %{
   evaluate-commands %sh{
-    case "$kak_opt_last_mode" in
+    case "$kak_opt_objects_last_mode" in
       '<a-i>') k='x_' ;;
       '<a-a>') k='x' ;;
       '[') k='<a-h>' ;;
@@ -65,7 +65,7 @@ define-command -hidden text-object-line %{
 # work in progress - very brittle for now
 define-command -hidden text-object-tag %{
   evaluate-commands %sh{
-    case "$kak_opt_last_mode" in
+    case "$kak_opt_objects_last_mode" in
       '<a-i>') k='<a-i>c<gt>,<lt><ret>' ;;
       '<a-a>') k='<esc><a-f><lt>2f<gt>' ;;
     esac
@@ -82,7 +82,7 @@ define-command -hidden text-object-indented-paragraph %{
 # depends on occivink/vertical-selection.kak
 define-command -hidden text-object-vertical %{
   evaluate-commands %sh{
-    case "$kak_opt_last_mode" in
+    case "$kak_opt_objects_last_mode" in
       '<a-i>') k='<esc>: select-vertically<ret>' ;;
       '<a-a>') k='<a-i>w<esc>: select-vertically<ret>' ;;
       '[') k='<esc>: select-up<ret>' ;;
@@ -98,9 +98,9 @@ define-command -hidden text-object-vertical %{
 
 # hack to know in which "submode" we are
 # gGvV are not used in the context of this plugin
-declare-option -hidden str last_mode
+declare-option -hidden str objects_last_mode
 hook global NormalKey (g|G|v|V|<a-i>|<a-a>|\[|\]|\{|\}|<a-\[>|<a-\]>|<a-\{>|<a-\}>) %{
-  set-option global last_mode %val{hook_param}
+  set-option global objects_last_mode %val{hook_param}
 }
 
 # to add the mappings back if needed
