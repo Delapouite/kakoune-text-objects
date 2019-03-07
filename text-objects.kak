@@ -12,7 +12,7 @@ map global object 'x'     '<esc>: text-object-line<ret>'               -docstrin
 map global object 't'     '<esc>: text-object-tag<ret>'                -docstring 'tag'
 map global object '<tab>' '<esc>: text-object-indented-paragraph<ret>' -docstring 'indented paragraph'
 # depends on occivink/kakoune-vertical-selection
-map global object 'v' '<esc>: text-object-vertical<ret>'
+map global object 'v' '<esc>: text-object-vertical<ret>' -docstring 'vertical selection'
 
 # alias to avoid shift
 map global object 'd' '"' -docstring 'double quote string'
