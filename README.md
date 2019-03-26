@@ -83,6 +83,7 @@ You are guided by auto-info boxes along the way.
 
 - [kakoune-mirror](https://github.com/Delapouite/kakoune-mirror)
 - [kakoune-vertical-selection](https://github.com/occivink/kakoune-vertical-selection)
+- [objectify.kak](https://github.com/alexherbo2/objectify.kak)
 
 ## Licence
 
