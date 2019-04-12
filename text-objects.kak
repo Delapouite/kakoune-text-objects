@@ -80,12 +80,12 @@ define-command -hidden text-object-vertical %{
   try %{
     evaluate-commands %sh{
       case "$kak_opt_objects_last_mode" in
-        '<a-i>') k='<esc>:<space>select-vertically<ret>' ;;
-        '<a-a>') k='<a-i>w<esc>:<space>select-vertically<ret>' ;;
-        '[') k='<esc>:<space>select-up<ret>' ;;
-        ']') k='<esc>:<space>select-down<ret>' ;;
-        '{') k='<a-i>w<esc>:<space>select-up<ret>' ;;
-        '}') k='<a-i>w<esc>:<space>select-down<ret>' ;;
+        '<a-i>') k='<esc>:<space>vertical-selection-up-and-down<ret>' ;;
+        '<a-a>') k='<a-i>w<esc>:<space>vertical-selection-up-and-down<ret>' ;;
+        '[') k='<esc>:<space>vertical-selection-up<ret>' ;;
+        ']') k='<esc>:<space>vertical-selection-down<ret>' ;;
+        '{') k='<a-i>w<esc>:<space>vertical-selection-up<ret>' ;;
+        '}') k='<a-i>w<esc>:<space>vertical-selection-down<ret>' ;;
       esac
       [ -n "$k" ] && echo "execute-keys $k"
     }
