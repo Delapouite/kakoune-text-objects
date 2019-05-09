@@ -46,11 +46,23 @@ See https://github.com/mawww/kakoune/issues/9
 ### line
 
 By default Kakoune does not provide a real *line* text-object. This *line* concept is
-scattered around different keys `x`, `<a-h>`, `<a-l>`, `Gh`, `Gi`…
+scattered around different keys like `x`, `<a-h>`, `<a-l>`, `Gh`, `Gi`…
 
 This plugins tries to reunite them under the `x` text-object.
 For example `<a-a>x` selects the *whole* line (EOL included), while `<a-i>x`, only select
 *inside* the line (not leading spaces and EOL excluded).
+
+You may find this text-object redundant or even useless, but I found it nice to reinforce
+Kakoune's *orthogonality*.
+
+### buffer
+
+By default Kakoune does not provide a real *buffer* text-object. This *buffer* concept is
+scattered around different keys like `%`, `Gj`, `Gk`, `Ge`…
+
+This plugins tries to reunite them under the `f` text-object.
+For example `<a-a>f` selects the *whole* buffer, while `<a-i>f`, only select
+*inside* the buffer (not leading or trailing spaces).
 
 You may find this text-object redundant or even useless, but I found it nice to reinforce
 Kakoune's *orthogonality*.

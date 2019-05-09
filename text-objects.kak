@@ -10,6 +10,7 @@ map global object '<gt>' '<esc>: text-object-block <gt><ret>' -docstring 'next a
 # additional text objects
 map global object 'x'     '<esc>: text-object-line<ret>'               -docstring 'line'
 map global object 't'     '<esc>: text-object-tag<ret>'                -docstring 'tag'
+map global object 'f'     '<esc>: text-object-buffer<ret>'             -docstring 'buffer'
 map global object '<tab>' '<esc>: text-object-indented-paragraph<ret>' -docstring 'indented paragraph'
 # depends on occivink/kakoune-vertical-selection
 map global object 'v' '<esc>: text-object-vertical<ret>' -docstring 'vertical selection'
@@ -43,12 +44,14 @@ define-command -hidden text-object-block -params 1 %@
 define-command -hidden text-object-line %{
   evaluate-commands %sh{
     case "$kak_opt_objects_last_mode" in
-      '<a-i>') k='x_' ;;
+      # around
       '<a-a>') k='x' ;;
       '[') k='<a-h>' ;;
       ']') k='<a-l>L' ;;
       '{') k='Gh' ;;
       '}') k='GlL' ;;
+      # inside
+      '<a-i>') k='x_' ;;
       '<a-[>') k='<a-h>_' ;;
       '<a-]>') k='<a-l>' ;;
       '<a-{>') k='Gi' ;;
@@ -58,12 +61,34 @@ define-command -hidden text-object-line %{
   }
 }
 
+# this buffer object may seem to repeat builtins,
+# it is mostly here to improve the orthogonality of kakoune design
+define-command -hidden text-object-buffer %{
+  evaluate-commands %sh{
+    case "$kak_opt_objects_last_mode" in
+      # around
+      '<a-a>') k='\%' ;;
+      '[') k='<a-:><a-\;>\;Gk' ;;
+      ']') k='<a-:>\;Ge' ;;
+      '{') k='<a-:><a-\;>Gk' ;;
+      '}') k='<a-:>Ge' ;;
+      # inside
+      '<a-i>') k='\%_' ;;
+      '<a-[>') k='<a-:><a-\;>\;Gk_' ;;
+      '<a-]>') k='<a-:>\;Ge_' ;;
+      '<a-{>') k='<a-:><a-\;>Gk_' ;;
+      '<a-}>') k='<a-:>Ge_' ;;
+    esac
+    [ -n "$k" ] && echo "execute-keys <esc> $k"
+  }
+}
+
 # work in progress - very brittle for now
 define-command -hidden text-object-tag %{
   evaluate-commands %sh{
     case "$kak_opt_objects_last_mode" in
-      '<a-i>') k='<a-i>c<gt>,<lt><ret>' ;;
       '<a-a>') k='<esc><a-f><lt>2f<gt>' ;;
+      '<a-i>') k='<a-i>c<gt>,<lt><ret>' ;;
     esac
     [ -n "$k" ] && echo "execute-keys $k"
   }
@@ -109,7 +134,6 @@ define-command -hidden text-object-map %{
   map global user s ': enter-user-mode selectors<ret>' -docstring 'selectors…'
 
   map global selectors 'a' '*%s<ret>' -docstring 'select all'
-  map global selectors 'b' '%'        -docstring 'select buffer %'
 
   map global selectors 'i' '<a-i>' -docstring 'select inside object <a-i>'
   map global selectors 'o' '<a-a>' -docstring 'select outside object <a-a>'
@@ -130,7 +154,6 @@ define-command -hidden text-object-unmap %{
   unmap global user s
 
   unmap global selectors a
-  unmap global selectors b
 
   unmap global selectors i
   unmap global selectors o
