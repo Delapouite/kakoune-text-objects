@@ -6,6 +6,14 @@
 
 Add `text-objects.kak` to your autoload dir: `~/.config/kak/autoload/`.
 
+Or via [plug.kak](https://github.com/andreyorst/plug.kak):
+
+```
+plug 'delapouite/kakoune-text-objects' %{
+  text-object-map
+}
+```
+
 ## Why?
 
 How many modes are there in Kakoune? 8?
@@ -94,6 +102,7 @@ You are guided by auto-info boxes along the way.
 ## See Also
 
 - [kakoune-mirror](https://github.com/Delapouite/kakoune-mirror)
+- [kakoune-select-view](https://github.com/Delapouite/kakoune-select-view)
 - [kakoune-vertical-selection](https://github.com/occivink/kakoune-vertical-selection)
 - [objectify.kak](https://github.com/alexherbo2/objectify.kak)
 
