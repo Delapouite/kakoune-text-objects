@@ -1,173 +1,100 @@
-# extended behaviors for pairs
-map global object '('    '<esc>: text-object-block (<ret>'    -docstring 'prev parenthesis block'
-map global object ')'    '<esc>: text-object-block )<ret>'    -docstring 'next parenthesis block'
-map global object '{'    '<esc>: text-object-block {<ret>'    -docstring 'prev braces block'
-map global object '}'    '<esc>: text-object-block }<ret>'    -docstring 'next braces block'
-map global object '['    '<esc>: text-object-block [<ret>'    -docstring 'prev brackets block'
-map global object ']'    '<esc>: text-object-block ]<ret>'    -docstring 'next brackets block'
-map global object '<lt>' '<esc>: text-object-block <lt><ret>' -docstring 'prev angle block'
-map global object '<gt>' '<esc>: text-object-block <gt><ret>' -docstring 'next angle block'
-# additional text objects
-map global object 'x'     '<esc>: text-object-line<ret>'               -docstring 'line'
-map global object 't'     '<esc>: text-object-tag<ret>'                -docstring 'tag'
-map global object 'f'     '<esc>: text-object-buffer<ret>'             -docstring 'buffer'
-map global object '<tab>' '<esc>: text-object-indented-paragraph<ret>' -docstring 'indented paragraph'
-# depends on occivink/kakoune-vertical-selection
-map global object 'v' '<esc>: text-object-vertical<ret>' -docstring 'vertical selection'
+# text-objects ─────────────────────────────────────────────────────────────────
 
-# alias to avoid shift
-map global object 'd' '"' -docstring 'double quote string'
-map global object 'o' 'B' -docstring 'braces'
+hook global ModuleLoaded objectify %{
+  require-module text-objects
+}
 
-# see issue #9
-# first normal behavior, then fallback if it fails
-define-command -hidden text-object-block -params 1 %@
-  evaluate-commands %sh!
-    # there may be clever way to do this, but I don't want to be clever in shell
-    case "$1" in
-      '(') t=')';dir='<a-/>'; ;;
-      '{') t='}';dir='<a-/>'; ;;
-      '[') t=']';dir='<a-/>'; ;;
-      '<') t='>';dir='<a-/>'; ;;
-      ')') t='(';dir='/'; ;;
-      '}') t='{';dir='/'; ;;
-      ']') t='[';dir='/'; ;;
-      '>') t='<';dir='/'; ;;
-    esac
-    # $t is used instead of $1 to provide more 'intuitive' prev / next blocks when nested
-    echo "try %| exec $kak_opt_objects_last_mode '$t' | catch %| exec $dir \Q '$t' \E <ret> ; exec $kak_opt_objects_last_mode '$t' |"
-  !
-@
-
-# this line object may seem to repeat builtins,
-# it is mostly here to improve the orthogonality of kakoune design
-define-command -hidden text-object-line %{
+provide-module text-objects %{
+  require-module objectify
+  # Surrounding pairs
   evaluate-commands %sh{
-    case "$kak_opt_objects_last_mode" in
-      # around
-      '<a-a>') k='x' ;;
-      '[') k='<a-h>' ;;
-      ']') k='<a-l>L' ;;
-      '{') k='Gh' ;;
-      '}') k='GlL' ;;
-      # inside
-      '<a-i>') k='x_' ;;
-      '<a-[>') k='<a-h>_' ;;
-      '<a-]>') k='<a-l>' ;;
-      '<a-{>') k='Gi' ;;
-      '<a-}>') k='Gl' ;;
-    esac
-    [ -n "$k" ] && echo "execute-keys <esc> $k"
+    set -- \
+      'parenthesis' '(' ')' \
+      'braces' '{' '}' \
+      'brackets' '[' ']' \
+      'angle' '<' '>'
+    while test $# -ge 3; do
+      name=$1 opening=$2 closing=$3
+      shift 3
+      echo "
+        objectify-map-docstring 'previous $name block' global <a-a> $opening <esc><a-f>$opening<a-a>$opening
+        objectify-map-docstring 'previous $name block' global <a-i> $opening <esc><a-f>$opening<a-i>$opening
+        objectify-map-docstring 'next $name block' global <a-a> $closing <esc>f$closing<a-a>$closing
+        objectify-map-docstring 'next $name block' global <a-i> $closing <esc>f$closing<a-i>$closing
+      "
+    done
   }
+  # Line
+  objectify-map-docstring 'line' global <a-i> x <esc><a-x>_
 }
 
-# this buffer object may seem to repeat builtins,
-# it is mostly here to improve the orthogonality of kakoune design
-define-command -hidden text-object-buffer %{
-  evaluate-commands %sh{
-    case "$kak_opt_objects_last_mode" in
-      # around
-      '<a-a>') k='\%' ;;
-      '[') k='<a-:><a-\;>\;Gk' ;;
-      ']') k='<a-:>\;Ge' ;;
-      '{') k='<a-:><a-\;>Gk' ;;
-      '}') k='<a-:>Ge' ;;
-      # inside
-      '<a-i>') k='\%_' ;;
-      '<a-[>') k='<a-:><a-\;>\;Gk_' ;;
-      '<a-]>') k='<a-:>\;Ge_' ;;
-      '<a-{>') k='<a-:><a-\;>Gk_' ;;
-      '<a-}>') k='<a-:>Ge_' ;;
-    esac
-    [ -n "$k" ] && echo "execute-keys <esc> $k"
+# objectify ────────────────────────────────────────────────────────────────────
+
+provide-module objectify %{
+  # map [switches] <scope> <mode> <key> <keys>
+  # objectify-map <scope> <object-key> <key> <keys>
+  # Example: objectify-map global <a-i> x <esc><a-x>_
+  define-command objectify-map -params 4 -docstring 'objectify-map <scope> <object-key> <key> <keys>' %{
+    objectify-map-docstring '' %arg{@}
   }
-}
-
-# work in progress - very brittle for now
-define-command -hidden text-object-tag %{
-  evaluate-commands %sh{
-    case "$kak_opt_objects_last_mode" in
-      '<a-a>') k='<esc><a-f><lt>2f<gt>' ;;
-      '<a-i>') k='<a-i>c<gt>,<lt><ret>' ;;
-    esac
-    [ -n "$k" ] && echo "execute-keys $k"
-  }
-}
-
-# thanks occivink
-define-command -hidden text-object-indented-paragraph %{
-  execute-keys -draft -save-regs '' '<a-i>pZ'
-  execute-keys '<a-i>i<a-z>i'
-}
-
-# depends on occivink/kakoune-vertical-selection
-define-command -hidden text-object-vertical %{
-  try %{
+  alias global omap objectify-map
+  # map [switches] <scope> <mode> <key> <keys>
+  # objectify-map-docstring <docstring> <scope> <object-key> <key> <keys>
+  # Example: objectify-map-docstring 'line' global <a-i> x <esc><a-x>_
+  define-command objectify-map-docstring -params 5 -docstring 'objectify-map-docstring <docstring> <scope> <object-key> <key> <keys>' %{
     evaluate-commands %sh{
-      case "$kak_opt_objects_last_mode" in
-        '<a-i>') k='<esc>:<space>vertical-selection-up-and-down<ret>' ;;
-        '<a-a>') k='<a-i>w<esc>:<space>vertical-selection-up-and-down<ret>' ;;
-        '[') k='<esc>:<space>vertical-selection-up<ret>' ;;
-        ']') k='<esc>:<space>vertical-selection-down<ret>' ;;
-        '{') k='<a-i>w<esc>:<space>vertical-selection-up<ret>' ;;
-        '}') k='<a-i>w<esc>:<space>vertical-selection-down<ret>' ;;
+      docstring=$1 scope=$2 object_key=$3 key=$4 keys=$5
+      case "$object_key" in
+        '<a-a>')
+          object_name='to_begin-to_end-replace'
+          ;;
+        '[')
+          object_name='to_begin-replace'
+          ;;
+        ']')
+          object_name='to_end-replace'
+          ;;
+        '{')
+          object_name='to_begin-extend'
+          ;;
+        '}')
+          object_name='to_end-extend'
+          ;;
+        '<a-i>')
+          object_name='to_begin-to_end-inner-replace'
+          ;;
+        '<a-[>')
+          object_name='to_begin-inner-replace'
+          ;;
+        '<a-]>')
+          object_name='to_end-inner-replace'
+          ;;
+        '<a-{>')
+          object_name='to_begin-inner-extend'
+          ;;
+        '<a-}>')
+          object_name='to_end-inner-extend'
+          ;;
       esac
-      [ -n "$k" ] && echo "execute-keys $k"
+      key_name=$(printf '%s' "$key" | shasum -a 512 | cut -c 1-7)
+      command=objectify-$scope-$object_name-$key_name
+      printf '
+        define-command -hidden -override %s "execute-keys %%arg{3} %%arg{5}"
+        map -docstring %%arg{1} %%arg{2} object %%arg{4} "<a-;> objectify-execute-mapping %%arg{2} %%%%val{object_flags} %%%%val{select_mode} %s<ret>"
+      ' "$command" "$key_name"
     }
-  } catch %{
-    fail "no selections remaining" 
+  }
+  alias global omap-docstring objectify-map-docstring
+  # objectify-execute-mapping <scope> <object-flags> <select-mode> <key-name>
+  define-command -hidden objectify-execute-mapping -params 4 %{
+    evaluate-commands %sh{
+      scope=$1 object_flags=$2 select_mode=$3 key_name=$4
+      object_flags_name=$(printf '%s' "$object_flags" | tr '|' '-')
+      object_name=$object_flags_name-$select_mode
+      command=objectify-$scope-$object_name-$key_name
+      printf '%s' "$command"
+    }
   }
 }
 
-# helpers
-
-# hack to know in which "submode" we are
-# gGvV are not used in the context of this plugin
-declare-option -hidden str objects_last_mode
-hook global NormalKey (g|G|v|V|<a-i>|<a-a>|\[|\]|\{|\}|<a-\[>|<a-\]>|<a-\{>|<a-\}>) %{
-  set-option global objects_last_mode %val{hook_param}
-}
-
-# to add the mappings back if needed
-define-command -hidden text-object-map %{
-  try %{ declare-user-mode selectors }
-  map global user s ': enter-user-mode selectors<ret>' -docstring 'selectors…'
-
-  map global selectors 'a' '*%s<ret>' -docstring 'select all'
-
-  map global selectors 'i' '<a-i>' -docstring 'select inside object <a-i>'
-  map global selectors 'o' '<a-a>' -docstring 'select outside object <a-a>'
-
-  map global selectors 'j' '<a-[>' -docstring 'select inner object start <a-[>'
-  map global selectors 'k' '<a-]>' -docstring 'select inner object end <a-]>'
-  map global selectors 'J' '<a-{>' -docstring 'extend inner object start <a-{>'
-  map global selectors 'K' '<a-}>' -docstring 'extend inner object end <a-}>'
-
-  map global selectors 'h' '[' -docstring 'select object start ['
-  map global selectors 'l' ']' -docstring 'select object end ]'
-  map global selectors 'H' '{' -docstring 'extend object start {'
-  map global selectors 'L' '}' -docstring 'extend object end }'
-}
-
-# in rare scenarios when you need the original mappings
-define-command -hidden text-object-unmap %{
-  unmap global user s
-
-  unmap global selectors a
-
-  unmap global selectors i
-  unmap global selectors o
-
-  unmap global selectors j
-  unmap global selectors k
-  unmap global selectors J
-  unmap global selectors K
-
-  unmap global selectors h
-  unmap global selectors l
-  unmap global selectors H
-  unmap global selectors L
-}
-
-# init
-# text-object-map
+require-module objectify
