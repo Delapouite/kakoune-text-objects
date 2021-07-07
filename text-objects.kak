@@ -130,6 +130,10 @@ hook global NormalKey (g|G|v|V|<a-i>|<a-a>|\[|\]|\{|\}|<a-\[>|<a-\]>|<a-\{>|<a-\
 
 try %{ declare-user-mode selectors }
 
+define-command -override selectors %{
+    enter-user-mode selectors
+}
+
 define-command -override -hidden selectors-init %{
   map global selectors 'a' '*%s<ret>' -docstring 'select all'
   map global selectors 'i' '<a-i>' -docstring 'select inside object <a-i>'
