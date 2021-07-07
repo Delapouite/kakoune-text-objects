@@ -152,21 +152,6 @@ define-command -override -hidden selectors-init %{
 # to add the mappings back if needed
 define-command -hidden text-object-map %{
   map global user s ': enter-user-mode selectors<ret>' -docstring 'selectors…'
-
-  map global selectors 'a' '*%s<ret>' -docstring 'select all'
-
-  map global selectors 'i' '<a-i>' -docstring 'select inside object <a-i>'
-  map global selectors 'o' '<a-a>' -docstring 'select outside object <a-a>'
-
-  map global selectors 'j' '<a-[>' -docstring 'select inner object start <a-[>'
-  map global selectors 'k' '<a-]>' -docstring 'select inner object end <a-]>'
-  map global selectors 'J' '<a-{>' -docstring 'extend inner object start <a-{>'
-  map global selectors 'K' '<a-}>' -docstring 'extend inner object end <a-}>'
-
-  map global selectors 'h' '[' -docstring 'select object start ['
-  map global selectors 'l' ']' -docstring 'select object end ]'
-  map global selectors 'H' '{' -docstring 'extend object start {'
-  map global selectors 'L' '}' -docstring 'extend object end }'
 }
 
 # in rare scenarios when you need the original mappings
