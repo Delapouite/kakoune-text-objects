@@ -9,9 +9,7 @@ Add `text-objects.kak` to your autoload dir: `~/.config/kak/autoload/`.
 Or via [plug.kak](https://github.com/andreyorst/plug.kak):
 
 ```
-plug 'delapouite/kakoune-text-objects' %{
-  text-object-map
-}
+plug 'delapouite/kakoune-text-objects'
 ```
 
 ## Why?
@@ -89,15 +87,45 @@ Use it with caution.
 
 ### `selectors` mode
 
-A `selectors` user-mode is provided. Use the `text-object-map` command to enable it.
+A `selectors` user-mode is provided.
 
-By default it is mapped on `user s`. Its goal is to avoid using the `alt` key as much as possible
-and the related acrobatic fingers chords over the keyboard.
+Its goal is to avoid using the `alt` key as much as possible and the related acrobatic fingers chords over the keyboard.
+Moreover it does not really make sense to waste a modifier key for a one shot sequence (a.k.a. dead-key behavior).
 
-Example: to extend the selections until the next bracket.
-From `<a-}> ]` to `, s K ]`
+There's no default key to access this user-mode, but I personally map it to the `s` key:
 
-You are guided by auto-info boxes along the way.
+```
+map global normal s ': enter-user-mode selectors<ret>' -docstring 'selectors'
+```
+
+On a QWERTY layout, the `s` key is under the left hand.
+All the keys mapped to this user-mode, like `i`, `o`, `j`… are all under the right hand.
+
+I find this "left then right" hands sequence quite ergonomic.
+
+The mnemonic logic is defined like this:
+
+- `i` → inside, `o` → outside (around). Bonus, on a QWERTY layout there are next to each other.
+- `h` → outside left, `l` → outside right
+- `j` → inside left, `k` → inside right. Usually, `j` and `k` are for up and down moves.
+   But again, on a QWERTY keyboard, `j` and `k` are located between the `h` and `l` pair ("inside" this pair)
+
+As usual, upper keys are used to extend the selection.
+
+Examples:
+
+- to extend the selections until the next square bracket. Before: `<a-}> ]` After: `s K ]`
+- to select around words. Before: `<a-a> w` After: `s o w`.
+
+Note: You are guided by auto-info boxes along the way.
+
+"But, by doing so, you're sacrificing the regular behavior of `s` in the normal mode!"
+
+That's correct, but I decided to map it back to `s s`, which is easy to type:
+
+```
+map global selectors s s -docstring 'sub-selection'
+```
 
 ## See Also
 
